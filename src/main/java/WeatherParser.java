@@ -7,6 +7,7 @@ import org.json.simple.parser.ParseException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import data.*;
@@ -15,12 +16,26 @@ import data.*;
 public class WeatherParser {
     private static final String API_URL = "http://api.openweathermap.org/data/2.5/weather";
     private final String city;
-    private final JSONObject json;
+    private JSONObject json;
 
-    public WeatherParser(String city, String appId) throws IOException, ParseException {
+    public WeatherParser(String city, String appId) {
         this.city = city;
-        URL openweathermap = new URL(String.format("%s?q=%s&APPID=%s", API_URL, this.city, appId));
-        this.json = getJsonFromUrl(openweathermap);
+        URL openweathermap = null;
+        this.json = null;
+        try {
+            openweathermap = new URL(String.format("%s?q=%s&APPID=%s", API_URL, this.city, appId));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.json = getJsonFromUrl(openweathermap);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public String getCity() {
